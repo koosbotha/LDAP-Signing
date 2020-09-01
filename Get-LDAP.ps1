@@ -1,4 +1,4 @@
-﻿############################################################################# 
+############################################################################# 
 #                                                                           # 
 #   This Sample Code is provided for the purpose of illustration only       # 
 #   and is not intended to be used in a production environment.  THIS       # 
@@ -82,8 +82,8 @@ $cmd = { #Start Remote ScriptBlock
 $Result = @{$ENV:COMPUTERNAME = @{'2889' = @()}}
 
 $LogLevel = (Get-ItemProperty 'HKLM:SYSTEM\CurrentControlSet\Services\NTDS\Diagnostics').'16 LDAP Interface Events'
-
-Foreach ($Event in (Get-EventLog -LogName 'Directory Service' -After (Get-date).AddHours(($args[0])) | Where-Object{$_.EventID -in @('2889','2888','2887')}))
+$Result.$ENV:COMPUTERNAME.'LogLevel' = $LogLevel
+Foreach ($Event in (Get-EventLog -LogName 'Directory Service' -After (Get-date).AddHours(($args[0])) | Where-Object{$_.EventID -in @('2889')}))
 {
     $obj = @{}
 
@@ -96,9 +96,10 @@ Foreach ($Event in (Get-EventLog -LogName 'Directory Service' -After (Get-date).
         $Obj.AccountName    =  $Event.ReplacementStrings[1]
         $Obj.Address        =  $Event.ReplacementStrings[0]
         $Obj.BindingType    =  $Event.ReplacementStrings[2]
-        $obj.LogLevel       =  $LogLevel
+        
         $Result.$ENV:COMPUTERNAME.'2889' += [PSCustomObject]$obj
     }
+    
 
 }
 $Result  
@@ -139,8 +140,7 @@ Foreach ($Job in (Get-job -Name EventCollection).ChildJobs)
 }
 Get-job -Name EventCollection | remove-job
 
-$Evt2889 = @($Export.keys | foreach-object {$Export.$psitem.'2889'} | Select-Object EventID,AccountName,TimeGenerated,BindingType,Address,TimeWritten,MachineName, LogLevel)
-
+$Evt2889 = @($Export.keys | foreach-object {$Export.$psitem.'2889'} | Select-Object EventID,AccountName,TimeGenerated,BindingType,Address,TimeWritten,MachineName)
 
 $fileName = ".\$('LDAP2889-')$(Get-date -f dd-MM-hhmmss).csv" #File for RAW Data
 $Evt2889 | Export-Csv -LiteralPath $fileName -NoClobber -NoTypeInformation
@@ -176,9 +176,13 @@ td {
 </head>
 <body>
 <table border=0>
-<tr><th>Domain Controllers</th><th>Unsecure Binding attempts</th><th>LogLevel (Requires 2)</th>
+<tr><th>Domain Controllers</th><th>Unsecure Binding attempts LDAP</th><th>LogLevel (Requires 2)</th>
 </tr>
-$($Evt2889 | Group-Object -Property MachineName | foreach-object {"<tr><td>$($PSItem.Name)</td><td>$($Psitem.Count)</td><td>$($Psitem.Group[0].LogLevel)</td></tr>"})
+$(Foreach ($item in $Export)
+{
+$Item.Keys | ForEach-Object {"<TR><TD>$psitem</TD><TD>$($Item.$psitem.'2889'.count)</TD><TD>$($Item.$psitem.LogLevel)</TD></TR>"}
+}
+)
 </table>
 <br>
 <Table>
