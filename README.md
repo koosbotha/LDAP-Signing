@@ -5,6 +5,8 @@ Unsigned network traffic is susceptible to replay attacks in which an intruder i
 
 Channel binding tokens help make LDAP authentication over SSL/TLS more secure against man-in-the-middle attacks.
 
+This script will find all event 2889 in directory service event log and display the host needed to remediate or change to LDAPS.
+
 https://support.microsoft.com/en-nz/help/4520412/2020-ldap-channel-binding-and-ldap-signing-requirements-for-windows
 https://support.microsoft.com/en-us/help/935834/how-to-enable-ldap-signing-in-windows-server
 https://docs.microsoft.com/en-gb/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/dd941849(v=ws.10)
