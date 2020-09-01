@@ -1,0 +1,2 @@
+# LDAP-Signing
+In August 2019 Microsoft released guidance to Microsoft Active Directory (AD) administrators around hardening configurations for LDAP channel binding &amp; LDAP signing on their AD domains. On February 4, 2020 Microsoft announced that the defaults would not be changing but recommended that customers enable diagnostic event logging in their AD implementations to identify where hardening might be needed.
